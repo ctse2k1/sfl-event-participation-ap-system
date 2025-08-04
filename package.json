@@ -1,0 +1,28 @@
+{
+  "name": "sfl-event-participation-ap-system",
+  "version": "1.0.0",
+  "description": "Discord bot for tracking event participation and awarding activity points",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "watch": "tsc -w"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "typescript",
+    "event",
+    "participation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^24.2.0",
+    "discord.js": "^14.21.0",
+    "dotenv": "^17.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
