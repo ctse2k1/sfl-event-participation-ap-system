@@ -7,35 +7,37 @@ export async function execute(
 ): Promise<void> {
   // Create embed
   const embed = new EmbedBuilder()
-    .setTitle('📋 Available Event IDs')
-    .setDescription('Use these IDs when starting an event with `/event start`')
+    .setTitle('📋 Available Event Codes')
+    .setDescription('Use these codes when starting an event with `/event start`')
     .setColor(0x00FF00)
     .setTimestamp();
   
-  // Group events by type
-  const eventsByType: Record<string, { id: string, points: number }[]> = {};
+  // Sort events by ID for easier lookup
+  const sortedEvents: { id: string, type: string }[] = [];
   
   for (const [id, config] of Object.entries(eventConfigs)) {
-    if (!eventsByType[config.event_type]) {
-      eventsByType[config.event_type] = [];
-    }
-    
-    eventsByType[config.event_type].push({
+    sortedEvents.push({
       id,
-      points: config.points_per_minute
+      type: config.event_type
     });
   }
   
-  // Add each event type as a field
-  for (const [type, events] of Object.entries(eventsByType)) {
-    let eventText = "";
-    
-    for (const event of events) {
-      eventText += `**${event.id}** - ${event.points} points/min\n`;
-    }
-    
-    embed.addFields({ name: type, value: eventText });
+  // Sort alphabetically by ID
+  sortedEvents.sort((a, b) => a.id.localeCompare(b.id));
+  
+  // Format the event list with code blocks for easy copying
+  let eventText = "";
+  
+  for (const event of sortedEvents) {
+    // Use code block for the ID to make it stand out and easy to copy
+    eventText += `\`${event.id}\` - ${event.type}\n`;
   }
+  
+  // Add all events in a single field for easier scanning
+  embed.addFields({ 
+    name: "Event Codes", 
+    value: eventText || "No event codes available" 
+  });
   
   await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
