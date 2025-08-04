@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { generateEventCode } from '../../utils/eventUtils';
 import { EventConfig } from '../../types';
@@ -16,7 +16,7 @@ export async function execute(
   if (existingEvent) {
     await interaction.reply({ 
       content: `❌ You are already hosting an event with code **${existingEvent.code}**. Stop that event first before starting a new one.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -25,7 +25,7 @@ export async function execute(
   if (!eventConfigs[eventId]) {
     await interaction.reply({ 
       content: `❌ Invalid event ID: **${eventId}**. Use \`/event id\` to see available event IDs.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }

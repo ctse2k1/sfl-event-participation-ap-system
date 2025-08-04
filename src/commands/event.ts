@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { EventConfig } from '../types';
 
 // Import all subcommand handlers
@@ -145,7 +145,7 @@ export async function execute(
     default:
       await interaction.reply({ 
         content: `Unknown subcommand: ${subcommand}`, 
-        ephemeral: true 
+        flags: MessageFlags.Ephemeral 
       });
   }
 }

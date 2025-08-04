@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
 import { EventConfig } from '../../types';
@@ -13,7 +13,7 @@ export async function execute(
   if (!member) {
     await interaction.reply({ 
       content: "❌ Invalid member specified.", 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -25,7 +25,7 @@ export async function execute(
   if (!event) {
     await interaction.reply({ 
       content: `❌ You are not currently hosting any events.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -34,7 +34,7 @@ export async function execute(
   if (!event.participants[memberId]) {
     await interaction.reply({ 
       content: `❌ This member is not participating in your event.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -43,7 +43,7 @@ export async function execute(
   if (memberId === creatorId) {
     await interaction.reply({ 
       content: `❌ You cannot kick yourself from your own event. Use \`/event stop\` to end the event.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -62,7 +62,7 @@ export async function execute(
 
   await interaction.reply({ 
     content: `✅ **${member.username}** has been removed from your event. They participated for ${durationMinutes.toFixed(2)} minutes and earned ${pointsEarned.toFixed(2)} points.`, 
-    ephemeral: true 
+    flags: MessageFlags.Ephemeral 
   });
 
   // Notify the kicked member

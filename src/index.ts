@@ -1,4 +1,4 @@
-import { Client, Collection, Events, GatewayIntentBits, REST, Routes, ChatInputCommandInteraction } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, REST, Routes, ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -117,9 +117,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
     
     const errorMessage = 'There was an error while executing this command!';
     if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: errorMessage, ephemeral: true });
+      await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
     } else {
-      await interaction.reply({ content: errorMessage, ephemeral: true });
+      await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
     }
   }
 });

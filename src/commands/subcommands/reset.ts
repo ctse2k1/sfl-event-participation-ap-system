@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, getEventRecords, saveActiveEvents, saveEventRecords, ACTIVE_EVENTS_FILE, EVENT_RECORDS_FILE } from '../../utils/dataUtils';
 import fs from 'fs';
 import path from 'path';
@@ -26,13 +26,13 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     
     await interaction.reply({ 
       content: `✅ All event data has been reset. A backup was created at \`${backupFileName}\`.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
   } catch (error) {
     console.error('Failed to reset data:', error);
     await interaction.reply({ 
       content: `❌ Failed to reset data: ${error}`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
   }
 }

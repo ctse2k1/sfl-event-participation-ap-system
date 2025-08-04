@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, saveActiveEvents } from '../../utils/dataUtils';
 import { EventConfig } from '../../types';
 
@@ -14,7 +14,7 @@ export async function execute(
   if (!activeEvents[code]) {
     await interaction.reply({ 
       content: `❌ Invalid event code: **${code}**. Please check the code and try again.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -25,7 +25,7 @@ export async function execute(
   if (event.participants[participantId]) {
     await interaction.reply({ 
       content: `❌ You are already participating in this event.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }
@@ -39,7 +39,7 @@ export async function execute(
 
   await interaction.reply({ 
     content: `✅ You have successfully joined the **${event.event_type}** event!`, 
-    ephemeral: true 
+    flags: MessageFlags.Ephemeral 
   });
 
   // Notify the event creator

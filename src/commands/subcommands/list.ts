@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventByCreator } from '../../utils/dataUtils';
 import { EventConfig } from '../../types';
 
@@ -13,7 +13,7 @@ export async function execute(
   if (!event) {
     await interaction.reply({ 
       content: `❌ You are not currently hosting any events.`, 
-      ephemeral: true 
+      flags: MessageFlags.Ephemeral 
     });
     return;
   }

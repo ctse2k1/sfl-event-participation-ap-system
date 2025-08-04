@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventRecords } from '../../utils/dataUtils';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
