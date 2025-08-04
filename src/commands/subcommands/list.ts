@@ -19,7 +19,7 @@ export async function execute(
     return;
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
   // Get participant information
   const participantList = [];

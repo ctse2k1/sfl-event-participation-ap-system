@@ -35,7 +35,7 @@ export async function execute(
     return;
   }
 
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   
   const results = await calculateAndFinalizePoints(event, eventConfig);
   

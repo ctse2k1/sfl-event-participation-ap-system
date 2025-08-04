@@ -24,7 +24,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     }
   }
   
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
   
   // Check if we have any user points
   if (Object.keys(userPoints).length === 0) {
