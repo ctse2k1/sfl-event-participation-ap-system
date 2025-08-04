@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { getEventRecords } from '../../utils/dataUtils';
+import { getDisplayName } from '../../utils/userUtils';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const userId = interaction.user.id;
@@ -35,7 +36,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   
   // Create embed
   const embed = new EmbedBuilder()
-    .setTitle(`🏆 Activity Points: ${interaction.user.username}`)
+    .setTitle(`🏆 Activity Points: ${getDisplayName(interaction)}`)
     .setDescription(`You have earned a total of **${totalPoints.toFixed(2)}** activity points.`)
     .setColor(0x00FF00)
     .setTimestamp();

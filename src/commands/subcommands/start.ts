@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { generateEventCode } from '../../utils/eventUtils';
+import { getDisplayName } from '../../utils/userUtils';
 import { EventConfig } from '../../types';
 
 export async function execute(
@@ -60,7 +61,7 @@ export async function execute(
       { name: 'How to Join', value: `Other members can join using \`/event join ${code}\`` }
     )
     .setColor(0x00FF00)
-    .setFooter({ text: `Started by ${interaction.user.tag}` })
+    .setFooter({ text: `Started by ${getDisplayName(interaction)}` })
     .setTimestamp();
 
   await interaction.reply({ embeds: [embed] });

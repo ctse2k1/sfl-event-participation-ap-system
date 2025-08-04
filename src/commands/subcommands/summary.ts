@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventRecords } from '../../utils/dataUtils';
+import { getDisplayNameById } from '../../utils/userUtils';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const eventRecords = getEventRecords();
@@ -43,8 +44,8 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   
   for (const [userId, points] of sortedUsers) {
     try {
-      const user = await interaction.guild?.members.fetch(userId);
-      const displayName = user ? user.displayName : `Unknown User (${userId})`;
+      // Get display name using our helper function
+      const displayName = await getDisplayNameById(interaction, userId);
       
       // Add medal emoji for top 3
       let medal = "";
@@ -58,7 +59,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       // Limit to top 20 users
       if (rank > 20) break;
     } catch (error) {
-      console.error(`Failed to fetch user ${userId}:`, error);
+      console.error(`Failed to process user ${userId}:`, error);
       leaderboardText += `**${rank}. Unknown User (${userId})** - ${points.toFixed(2)} points\n`;
       rank++;
       

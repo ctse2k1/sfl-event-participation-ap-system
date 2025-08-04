@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
+import { getDisplayNameById } from '../../utils/userUtils';
 import { EventConfig } from '../../types';
 
 export async function execute(
@@ -19,6 +20,9 @@ export async function execute(
   }
 
   const memberId = member.id;
+  
+  // Get display name for the member
+  const displayName = await getDisplayNameById(interaction, memberId);
   
   // Check if user is hosting an event
   const event = getEventByCreator(creatorId);
@@ -61,7 +65,7 @@ export async function execute(
   saveActiveEvents(activeEvents);
 
   await interaction.reply({ 
-    content: `✅ **${member.username}** has been removed from your event. They participated for ${durationMinutes.toFixed(2)} minutes and earned ${pointsEarned.toFixed(2)} points.`, 
+    content: `✅ **${displayName}** has been removed from your event. They participated for ${durationMinutes.toFixed(2)} minutes and earned ${pointsEarned.toFixed(2)} points.`, 
     flags: MessageFlags.Ephemeral 
   });
 

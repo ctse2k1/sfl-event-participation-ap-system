@@ -1,7 +1,8 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
-import { EventConfig } from '../../types';
+import { getDisplayNameById } from '../../utils/userUtils';
+import { EventConfig, ParticipantPointsResult } from '../../types';
 
 export async function execute(
   interaction: ChatInputCommandInteraction, 
@@ -20,10 +21,17 @@ export async function execute(
     return;
   }
 
-  await interaction.deferReply();
+  // Calculate points for all participants
+  const eventConfig = eventConfigs[event.event_type];
+  if (!eventConfig) {
+    await interaction.reply({ 
+      content: `❌ Event type configuration not found.`, 
+      flags: MessageFlags.Ephemeral 
+    });
+    return;
+  }
 
-  // Calculate points and finalize event
-  const results = await calculateAndFinalizePoints(event, eventConfigs[event.event_id]);
+  const results = await calculateAndFinalizePoints(event, eventConfig);
   
   // Remove event from active events
   delete activeEvents[event.code];
@@ -36,19 +44,19 @@ export async function execute(
 
   for (const [userId, data] of Object.entries(results.participantResults)) {
     try {
-      const user = await interaction.guild?.members.fetch(userId);
-      const displayName = user ? user.displayName : `Unknown User (${userId})`;
+      // Get display name using our helper function
+      const displayName = await getDisplayNameById(interaction, userId);
       
       resultText += `**${displayName}**\n`;
-      resultText += `• Duration: ${data.durationMinutes.toFixed(2)} minutes\n`;
-      resultText += `• Points Earned: ${data.pointsEarned.toFixed(2)}\n\n`;
+      resultText += `• Duration: ${(data as ParticipantPointsResult).durationMinutes.toFixed(2)} minutes\n`;
+      resultText += `• Points Earned: ${(data as ParticipantPointsResult).pointsEarned.toFixed(2)}\n\n`;
     } catch (error) {
-      console.error(`Failed to fetch user ${userId}:`, error);
+      console.error(`Failed to process user ${userId}:`, error);
       resultText += `**Unknown User (${userId})**\n`;
-      resultText += `• Duration: ${data.durationMinutes.toFixed(2)} minutes\n`;
-      resultText += `• Points Earned: ${data.pointsEarned.toFixed(2)}\n\n`;
+      resultText += `• Duration: ${(data as ParticipantPointsResult).durationMinutes.toFixed(2)} minutes\n`;
+      resultText += `• Points Earned: ${(data as ParticipantPointsResult).pointsEarned.toFixed(2)}\n\n`;
     }
   }
 
-  await interaction.editReply(resultText);
+  await interaction.reply({ content: resultText });
 }

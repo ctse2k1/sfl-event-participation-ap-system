@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventByCreator } from '../../utils/dataUtils';
+import { getDisplayName } from '../../utils/userUtils';
 import { EventConfig } from '../../types';
 
 export async function execute(
@@ -57,7 +58,7 @@ export async function execute(
     .setTitle(`🎮 Event Participants: ${event.event_type}`)
     .setDescription(`Event Code: **${event.code}**`)
     .setColor(0x00FF00)
-    .setFooter({ text: `Hosted by ${interaction.user.username}` })
+    .setFooter({ text: `Hosted by ${getDisplayName(interaction)}` })
     .setTimestamp();
 
   // Add participants to embed

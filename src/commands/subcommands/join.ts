@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, saveActiveEvents } from '../../utils/dataUtils';
+import { getDisplayName } from '../../utils/userUtils';
 import { EventConfig } from '../../types';
 
 export async function execute(
@@ -46,7 +47,7 @@ export async function execute(
   try {
     const creator = await interaction.guild?.members.fetch(event.creator_id);
     if (creator) {
-      const participant = interaction.user.username;
+      const participant = getDisplayName(interaction);
       await creator.send(`**${participant}** has joined your event with code **${code}**.`);
     }
   } catch (error) {
