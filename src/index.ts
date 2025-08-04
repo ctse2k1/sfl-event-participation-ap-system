@@ -73,6 +73,24 @@ client.once(Events.ClientReady, async (readyClient) => {
     
     console.log(`Started refreshing ${commandData.length} application (/) commands.`);
     
+    // Get existing commands
+    const existingCommands = await rest.get(
+      Routes.applicationCommands(readyClient.user.id)
+    ) as any[];
+    
+    console.log(`Found ${existingCommands.length} existing commands.`);
+    
+    // Delete old commands that are not in the new command set
+    const newCommandNames = commandData.map(cmd => cmd.name);
+    for (const existingCmd of existingCommands) {
+      if (!newCommandNames.includes(existingCmd.name)) {
+        console.log(`Deleting old command: ${existingCmd.name}`);
+        await rest.delete(
+          Routes.applicationCommand(readyClient.user.id, existingCmd.id)
+        );
+      }
+    }
+    
     // Register commands globally
     await rest.put(
       Routes.applicationCommands(readyClient.user.id),
