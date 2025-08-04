@@ -1,12 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { getEventRecords } from '../utils/dataUtils';
 
 export const data = new SlashCommandBuilder()
   .setName('summary')
   .setDescription('Displays the point leaderboard for the server.');
 
-export async function execute(interaction: CommandInteraction): Promise<void> {
+export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const eventRecords = getEventRecords();
 
   if (eventRecords.length === 0) {

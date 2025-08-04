@@ -1,12 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { getEventRecords } from '../utils/dataUtils';
 
 export const data = new SlashCommandBuilder()
   .setName('me')
   .setDescription('Shows your total activity points and event history.');
 
-export async function execute(interaction: CommandInteraction): Promise<void> {
+export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const userId = interaction.user.id;
   const eventRecords = getEventRecords();
 

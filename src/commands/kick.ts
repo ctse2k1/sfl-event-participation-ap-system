@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../utils/eventUtils';
 import { EventConfig } from '../types';
@@ -13,7 +13,7 @@ export const data = new SlashCommandBuilder()
       .setRequired(true));
 
 export async function execute(
-  interaction: CommandInteraction, 
+  interaction: ChatInputCommandInteraction, 
   eventConfigs: Record<string, EventConfig>
 ): Promise<void> {
   const creatorId = interaction.user.id;

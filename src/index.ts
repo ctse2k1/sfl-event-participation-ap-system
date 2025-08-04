@@ -1,4 +1,4 @@
-import { Client, Collection, Events, GatewayIntentBits, REST, Routes } from 'discord.js';
+import { Client, Collection, Events, GatewayIntentBits, REST, Routes, ChatInputCommandInteraction } from 'discord.js';
 import { config } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
@@ -43,7 +43,7 @@ ensureDataDir();
 // Create a collection for commands
 interface CommandModule {
   data: any;
-  execute: (interaction: any, eventConfigs?: Record<string, EventConfig>) => Promise<void>;
+  execute: (interaction: ChatInputCommandInteraction, eventConfigs?: Record<string, EventConfig>) => Promise<void>;
 }
 
 const commands = new Collection<string, CommandModule>();
@@ -86,7 +86,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 
 // Handle slash command interactions
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isCommand()) return;
+  if (!interaction.isChatInputCommand()) return;
   
   const command = commands.get(interaction.commandName);
   if (!command) return;

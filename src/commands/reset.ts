@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction } from 'discord.js';
 import { getActiveEvents, getEventRecords, saveActiveEvents, saveEventRecords, ACTIVE_EVENTS_FILE, EVENT_RECORDS_FILE } from '../utils/dataUtils';
 import fs from 'fs';
 import path from 'path';
@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
   .setDescription('Resets all event data and points (Admin only).')
   .setDefaultMemberPermissions(0); // Requires administrator permission
 
-export async function execute(interaction: CommandInteraction): Promise<void> {
+export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   // Create backup of current data
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const backupFileName = `event_records_backup_${timestamp}.json`;

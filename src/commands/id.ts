@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { EventConfig } from '../types';
 
 export const data = new SlashCommandBuilder()
@@ -7,7 +7,7 @@ export const data = new SlashCommandBuilder()
   .setDescription('Lists all available event IDs and their types.');
 
 export async function execute(
-  interaction: CommandInteraction, 
+  interaction: ChatInputCommandInteraction, 
   eventConfigs: Record<string, EventConfig>
 ): Promise<void> {
   if (Object.keys(eventConfigs).length === 0) {

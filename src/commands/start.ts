@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { CommandInteraction, EmbedBuilder } from 'discord.js';
+import { ChatInputCommandInteraction, EmbedBuilder } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../utils/dataUtils';
 import { generateEventCode } from '../utils/eventUtils';
 import { EventConfig } from '../types';
@@ -13,10 +13,10 @@ export const data = new SlashCommandBuilder()
       .setRequired(true));
 
 export async function execute(
-  interaction: CommandInteraction, 
+  interaction: ChatInputCommandInteraction, 
   eventConfigs: Record<string, EventConfig>
 ): Promise<void> {
-  const eventId = interaction.options.get('event_id')?.value as string;
+  const eventId = interaction.options.getString('event_id', true);
   const creatorId = interaction.user.id;
   const activeEvents = getActiveEvents();
 
