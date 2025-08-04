@@ -36,6 +36,8 @@ A Discord bot for tracking event participation and awarding activity points, wri
 5. Build the project with `npm run build`
 6. Start the bot with `npm start`
 
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Development
 
 - `npm run dev` - Run the bot in development mode with hot reloading
