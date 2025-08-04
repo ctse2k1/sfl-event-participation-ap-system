@@ -29,21 +29,41 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   for (const record of recentEvents) {
     const date = new Date(record.end_time).toLocaleDateString();
-    const participantCount = record.participants ? Object.keys(record.participants).length : 0;
     
     try {
-      const creator = await interaction.guild?.members.fetch(record.creator_id);
-      const creatorName = creator ? creator.displayName : `Unknown (${record.creator_id})`;
+      // Handle both old and new record formats
+      const userId = record.user_id || record.creator_id || '';
+      let participantName = `Unknown (${userId})`;
+      
+      if (userId) {
+        try {
+          const participant = await interaction.guild?.members.fetch(userId);
+          if (participant) {
+            participantName = participant.displayName;
+          }
+        } catch (fetchError) {
+          console.error(`Failed to fetch user ${userId}:`, fetchError);
+        }
+      }
+      
+      const pointsText = record.points_earned !== undefined 
+        ? ` | Points: ${record.points_earned.toFixed(2)}` 
+        : '';
       
       recordsText += `**${record.event_type}** - ${date}\n`;
-      recordsText += `Host: ${creatorName} | Participants: ${participantCount}\n`;
-      recordsText += `Duration: ${record.duration_minutes.toFixed(2)} minutes\n\n`;
+      recordsText += `Participant: ${participantName}\n`;
+      recordsText += `Duration: ${record.duration_minutes.toFixed(2)} minutes${pointsText}\n\n`;
     } catch (error) {
-      console.error(`Failed to fetch creator ${record.creator_id}:`, error);
+      console.error(`Failed to process record:`, error);
+      
+      const userId = record.user_id || record.creator_id || 'unknown';
+      const pointsText = record.points_earned !== undefined 
+        ? ` | Points: ${record.points_earned.toFixed(2)}` 
+        : '';
       
       recordsText += `**${record.event_type}** - ${date}\n`;
-      recordsText += `Host: Unknown (${record.creator_id}) | Participants: ${participantCount}\n`;
-      recordsText += `Duration: ${record.duration_minutes.toFixed(2)} minutes\n\n`;
+      recordsText += `Participant: Unknown (${userId})\n`;
+      recordsText += `Duration: ${record.duration_minutes.toFixed(2)} minutes${pointsText}\n\n`;
     }
   }
 

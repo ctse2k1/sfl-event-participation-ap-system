@@ -25,11 +25,13 @@ export interface ParticipantResult {
 export interface EventRecord {
   event_id: string;
   event_type: string;
-  creator_id: string;
+  creator_id?: string;
+  user_id?: string;
   start_time: string;
   end_time: string;
   duration_minutes: number;
-  participants: Record<string, ParticipantResult>;
+  points_earned?: number;
+  participants?: Record<string, ParticipantResult>;
 }
 
 export interface ParticipantPointsResult {
