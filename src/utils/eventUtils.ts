@@ -1,45 +1,55 @@
-import { ActiveEvent, EventConfig, EventRecord, PointsResult } from '../types';
-import { getEventRecords, saveEventRecords } from './dataUtils';
+import { ActiveEvent, EventConfig, EventRecord, PointsResult, ParticipantPointsResult, ParticipantResult } from '../types';
+import { getEventRecords, saveEventRecords, getActiveEvents } from './dataUtils';
 
-// Calculate and finalize points for a participant
-export function calculateAndFinalizePoints(
-  memberId: string,
-  eventCode: string,
-  activeEvents: Record<string, ActiveEvent>,
-  eventConfigs: Record<string, EventConfig>
-): PointsResult | null {
-  const event = activeEvents[eventCode];
-  if (!event) return null;
-
-  const memberIdStr = memberId.toString();
-  const participantInfo = event.participants[memberIdStr];
-  if (!participantInfo) return null;
-
-  const eventConfig = eventConfigs[event.event_id];
-  if (!eventConfig) return null;
-
-  const startTime = new Date(participantInfo.join_time);
+// Calculate and finalize points for an event
+export async function calculateAndFinalizePoints(
+  event: ActiveEvent,
+  eventConfig: EventConfig
+): Promise<PointsResult> {
   const endTime = new Date();
-  const durationSeconds = (endTime.getTime() - startTime.getTime()) / 1000;
-  const durationMinutes = durationSeconds / 60;
-  const points = Math.max(0, Math.round(durationMinutes * eventConfig.points_per_minute * 100) / 100);
-
-  // Save raw event record
+  const startTime = new Date(event.start_time);
+  const totalDurationMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+  
+  // Calculate points for each participant
+  const participantResults: Record<string, ParticipantPointsResult> = {};
+  const eventParticipants: Record<string, ParticipantResult> = {};
+  
+  for (const [userId, participantInfo] of Object.entries(event.participants)) {
+    const joinTime = new Date(participantInfo.join_time);
+    const participantDurationMinutes = (endTime.getTime() - joinTime.getTime()) / (1000 * 60);
+    const pointsEarned = Math.max(0, Math.round(participantDurationMinutes * eventConfig.points_per_minute * 100) / 100);
+    
+    participantResults[userId] = {
+      durationMinutes: Math.round(participantDurationMinutes * 100) / 100,
+      pointsEarned
+    };
+    
+    eventParticipants[userId] = {
+      duration_minutes: Math.round(participantDurationMinutes * 100) / 100,
+      points_earned: pointsEarned
+    };
+  }
+  
+  // Create event record
   const eventRecord: EventRecord = {
-    user_id: memberIdStr,
     event_id: event.event_id,
-    event_type: eventConfig.event_type,
+    event_type: event.event_type,
+    creator_id: event.creator_id,
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
-    duration_minutes: Math.round(durationMinutes * 100) / 100,
-    points_earned: points
+    duration_minutes: Math.round(totalDurationMinutes * 100) / 100,
+    participants: eventParticipants
   };
-
+  
+  // Save event record
   const eventRecords = getEventRecords();
   eventRecords.push(eventRecord);
   saveEventRecords(eventRecords);
-
-  return { points, duration: durationMinutes };
+  
+  return {
+    durationMinutes: Math.round(totalDurationMinutes * 100) / 100,
+    participantResults
+  };
 }
 
 // Generate a random event code

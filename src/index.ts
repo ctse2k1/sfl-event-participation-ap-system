@@ -48,7 +48,8 @@ interface CommandModule {
 
 const commands = new Collection<string, CommandModule>();
 const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'));
+const commandFiles = fs.readdirSync(commandsPath)
+  .filter(file => (file.endsWith('.js') || file.endsWith('.ts')) && !fs.statSync(path.join(commandsPath, file)).isDirectory());
 
 // Load all command files
 for (const file of commandFiles) {

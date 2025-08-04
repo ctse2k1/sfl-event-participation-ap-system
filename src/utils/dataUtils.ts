@@ -60,14 +60,15 @@ export function saveEventRecords(eventRecords: EventRecord[]): void {
 }
 
 // Get event by creator
-export function getEventByCreator(creatorId: string, activeEvents: Record<string, ActiveEvent>): [string | null, ActiveEvent | null] {
+export function getEventByCreator(creatorId: string, activeEvents?: Record<string, ActiveEvent>): ActiveEvent | null {
   const creatorIdStr = creatorId.toString();
+  const events = activeEvents || getActiveEvents();
   
-  for (const [eventCode, event] of Object.entries(activeEvents)) {
+  for (const [eventCode, event] of Object.entries(events)) {
     if (event.creator_id === creatorIdStr) {
-      return [eventCode, event];
+      return event;
     }
   }
   
-  return [null, null];
+  return null;
 }

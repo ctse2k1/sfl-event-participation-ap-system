@@ -11,23 +11,35 @@ export interface ParticipantInfo {
 export interface ActiveEvent {
   creator_id: string;
   event_id: string;
+  event_type: string;
+  code: string;
   start_time: string;
   participants: Record<string, ParticipantInfo>;
 }
 
-export interface EventRecord {
-  user_id: string;
-  event_id: string;
-  event_type: string;
-  start_time: string;
-  end_time: string;
+export interface ParticipantResult {
   duration_minutes: number;
   points_earned: number;
 }
 
+export interface EventRecord {
+  event_id: string;
+  event_type: string;
+  creator_id: string;
+  start_time: string;
+  end_time: string;
+  duration_minutes: number;
+  participants: Record<string, ParticipantResult>;
+}
+
+export interface ParticipantPointsResult {
+  durationMinutes: number;
+  pointsEarned: number;
+}
+
 export interface PointsResult {
-  points: number;
-  duration: number;
+  durationMinutes: number;
+  participantResults: Record<string, ParticipantPointsResult>;
 }
 
 export interface Config {
