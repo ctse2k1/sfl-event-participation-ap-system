@@ -37,5 +37,5 @@ export async function execute(
     embed.addFields({ name: type, value: eventText });
   }
   
-  await interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }

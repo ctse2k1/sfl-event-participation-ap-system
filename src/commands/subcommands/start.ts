@@ -64,5 +64,5 @@ export async function execute(
     .setFooter({ text: `Started by ${getDisplayName(interaction)}` })
     .setTimestamp();
 
-  await interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }

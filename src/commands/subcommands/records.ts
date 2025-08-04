@@ -70,5 +70,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   embed.setDescription(recordsText);
   embed.setFooter({ text: `Showing ${recentEvents.length} of ${eventRecords.length} records` });
 
-  await interaction.reply({ embeds: [embed] });
+  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
