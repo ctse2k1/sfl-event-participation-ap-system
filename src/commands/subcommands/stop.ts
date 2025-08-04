@@ -22,10 +22,14 @@ export async function execute(
   }
 
   // Calculate points for all participants
-  const eventConfig = eventConfigs[event.event_type];
+  // Find the event config by matching the event_type
+  const eventConfig = Object.values(eventConfigs).find(config => 
+    config.event_type === event.event_type
+  );
+  
   if (!eventConfig) {
     await interaction.reply({ 
-      content: `❌ Event type configuration not found.`, 
+      content: `❌ Event type configuration not found for "${event.event_type}".`, 
       flags: MessageFlags.Ephemeral 
     });
     return;

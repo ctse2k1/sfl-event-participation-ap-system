@@ -54,7 +54,20 @@ export async function execute(
 
   // Calculate points for the kicked member
   const activeEvents = getActiveEvents();
-  const eventConfig = eventConfigs[event.event_id];
+  
+  // Find the event config by matching the event_type
+  const eventConfig = Object.values(eventConfigs).find(config => 
+    config.event_type === event.event_type
+  );
+  
+  if (!eventConfig) {
+    await interaction.reply({ 
+      content: `❌ Event type configuration not found for "${event.event_type}".`, 
+      flags: MessageFlags.Ephemeral 
+    });
+    return;
+  }
+  
   const joinTime = new Date(event.participants[memberId].join_time);
   const kickTime = new Date();
   const durationMinutes = (kickTime.getTime() - joinTime.getTime()) / (1000 * 60);
