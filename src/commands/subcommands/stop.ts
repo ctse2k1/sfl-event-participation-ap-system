@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
 import { getDisplayNameById } from '../../utils/userUtils';
@@ -35,32 +35,72 @@ export async function execute(
     return;
   }
 
+  await interaction.deferReply();
+  
   const results = await calculateAndFinalizePoints(event, eventConfig);
   
   // Remove event from active events
   delete activeEvents[event.code];
   saveActiveEvents(activeEvents);
 
-  // Format results
-  let resultText = `# Event Ended: ${event.event_type}\n\n`;
-  resultText += `**Duration:** ${results.durationMinutes.toFixed(2)} minutes\n\n`;
-  resultText += "## Participant Results\n\n";
+  // Create embed for results
+  const embed = new EmbedBuilder()
+    .setTitle(`🏁 Event Ended: ${event.event_type}`)
+    .setDescription(`Total Duration: **${results.durationMinutes.toFixed(2)} minutes**`)
+    .setColor(0x3498DB) // Blue color
+    .setTimestamp()
+    .setFooter({ text: `Event ID: ${event.event_id}` });
 
+  // Process participant results
+  const participantEntries = [];
+  
   for (const [userId, data] of Object.entries(results.participantResults)) {
     try {
       // Get display name using our helper function
       const displayName = await getDisplayNameById(interaction, userId);
+      const isHost = userId === event.creator_id ? " 👑" : "";
       
-      resultText += `**${displayName}**\n`;
-      resultText += `• Duration: ${(data as ParticipantPointsResult).durationMinutes.toFixed(2)} minutes\n`;
-      resultText += `• Points Earned: ${(data as ParticipantPointsResult).pointsEarned.toFixed(2)}\n\n`;
+      participantEntries.push({
+        name: displayName,
+        isHost: userId === event.creator_id,
+        duration: (data as ParticipantPointsResult).durationMinutes.toFixed(2),
+        points: (data as ParticipantPointsResult).pointsEarned.toFixed(2)
+      });
     } catch (error) {
       console.error(`Failed to process user ${userId}:`, error);
-      resultText += `**Unknown User (${userId})**\n`;
-      resultText += `• Duration: ${(data as ParticipantPointsResult).durationMinutes.toFixed(2)} minutes\n`;
-      resultText += `• Points Earned: ${(data as ParticipantPointsResult).pointsEarned.toFixed(2)}\n\n`;
+      participantEntries.push({
+        name: `Unknown User (${userId})`,
+        isHost: userId === event.creator_id,
+        duration: (data as ParticipantPointsResult).durationMinutes.toFixed(2),
+        points: (data as ParticipantPointsResult).pointsEarned.toFixed(2)
+      });
     }
   }
+  
+  // Sort participants (host first, then by points earned)
+  participantEntries.sort((a, b) => {
+    if (a.isHost && !b.isHost) return -1;
+    if (!a.isHost && b.isHost) return 1;
+    return parseFloat(b.points) - parseFloat(a.points);
+  });
+  
+  // Add participants to embed
+  let participantsText = "";
+  let totalPoints = 0;
+  
+  for (const participant of participantEntries) {
+    const hostTag = participant.isHost ? " 👑" : "";
+    participantsText += `**${participant.name}**${hostTag}\n`;
+    participantsText += `• Duration: ${participant.duration} minutes\n`;
+    participantsText += `• Points: ${participant.points}\n\n`;
+    
+    totalPoints += parseFloat(participant.points);
+  }
+  
+  embed.addFields(
+    { name: `Participants (${participantEntries.length})`, value: participantsText || "No participants" },
+    { name: "Total Points Awarded", value: `${totalPoints.toFixed(2)} points`, inline: true }
+  );
 
-  await interaction.reply({ content: resultText });
+  await interaction.editReply({ embeds: [embed] });
 }
