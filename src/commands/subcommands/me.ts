@@ -10,6 +10,12 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const userEvents = [];
   
   for (const record of eventRecords) {
+    // Skip records without participants
+    if (!record.participants) {
+      console.warn('Found event record without participants:', record);
+      continue;
+    }
+    
     for (const [participantId, data] of Object.entries(record.participants)) {
       if (participantId === userId) {
         totalPoints += data.points_earned;

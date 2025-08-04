@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 
   for (const record of recentEvents) {
     const date = new Date(record.end_time).toLocaleDateString();
-    const participantCount = Object.keys(record.participants).length;
+    const participantCount = record.participants ? Object.keys(record.participants).length : 0;
     
     try {
       const creator = await interaction.guild?.members.fetch(record.creator_id);

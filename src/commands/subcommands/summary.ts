@@ -8,6 +8,12 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const userPoints: Record<string, number> = {};
   
   for (const record of eventRecords) {
+    // Skip records without participants
+    if (!record.participants) {
+      console.warn('Found event record without participants:', record);
+      continue;
+    }
+    
     for (const [userId, data] of Object.entries(record.participants)) {
       if (!userPoints[userId]) {
         userPoints[userId] = 0;
@@ -17,11 +23,19 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     }
   }
   
+  await interaction.deferReply();
+  
+  // Check if we have any user points
+  if (Object.keys(userPoints).length === 0) {
+    await interaction.editReply({
+      content: "No activity points recorded yet."
+    });
+    return;
+  }
+  
   // Sort users by points (highest first)
   const sortedUsers = Object.entries(userPoints)
     .sort(([, pointsA], [, pointsB]) => pointsB - pointsA);
-  
-  await interaction.deferReply();
   
   // Create leaderboard text
   let leaderboardText = "";
