@@ -86,20 +86,16 @@ export async function execute(
   
   // Add participants to embed
   let participantsText = "";
-  let totalPoints = 0;
   
   for (const participant of participantEntries) {
     const hostTag = participant.isHost ? " 👑" : "";
     participantsText += `**${participant.name}**${hostTag}\n`;
     participantsText += `• Duration: ${participant.duration} minutes\n`;
     participantsText += `• Points: ${participant.points}\n\n`;
-    
-    totalPoints += parseFloat(participant.points);
   }
   
   embed.addFields(
-    { name: `Participants (${participantEntries.length})`, value: participantsText || "No participants" },
-    { name: "Total Points Awarded", value: `${totalPoints.toFixed(2)} points`, inline: true }
+    { name: `Participants (${participantEntries.length})`, value: participantsText || "No participants" }
   );
 
   await interaction.editReply({ embeds: [embed] });
