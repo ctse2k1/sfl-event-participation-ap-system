@@ -98,8 +98,7 @@ export async function execute(
   }
   
   embed.addFields(
-    { name: `Participants (${participantEntries.length})`, value: participantsText || "No participants" },
-    { name: "Total Points Awarded", value: `${totalPoints.toFixed(2)} points`, inline: true }
+    { name: `Participants (${participantEntries.length})`, value: participantsText || "No participants" }
   );
 
   await interaction.editReply({ embeds: [embed] });
