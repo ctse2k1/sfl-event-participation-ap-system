@@ -49,7 +49,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     for (const event of recentEvents) {
       const dateString = event.date.toLocaleDateString();
       const hostTag = event.wasHost ? " 👑" : "";
-      recentEventsText += `**${event.event_type}**${hostTag} - ${dateString} - ${event.points.toFixed(2)} points (${event.duration.toFixed(2)} min)\n`;
+      recentEventsText += `**${event.event_type}**${hostTag} - ${dateString} - 💎 ${event.points.toFixed(2)} points (⏱️ ${event.duration.toFixed(2)} minutes)\n`;
     }
     
     embed.addFields({ 
