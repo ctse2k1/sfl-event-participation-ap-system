@@ -53,14 +53,17 @@ The bot uses a `config.json` file to define event types and their point values. 
 {
   "events": {
     "raid": {
+      "event_id": "1",
       "event_type": "Raid",
       "points_per_minute": 1.0
     },
     "dungeon": {
+      "event_id": "2",
       "event_type": "Dungeon Run",
       "points_per_minute": 0.8
     },
     "pvp": {
+      "event_id": "3",
       "event_type": "PvP Tournament",
       "points_per_minute": 1.2
     }
