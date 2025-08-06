@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, Interaction, EmbedBuilder, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getActiveEvents } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
@@ -12,7 +13,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   );
 
   if (!currentEvent) {
-    await interaction.reply({
+    await safeReply(interaction, {
       content: "You are not currently participating in any active events.",
       flags: MessageFlags.Ephemeral
     });
@@ -40,7 +41,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const actionRow = new ActionRowBuilder<ButtonBuilder>()
     .addComponents(leaveButton);
 
-  await interaction.reply({
+  await safeReply(interaction, {
     embeds: [embed],
     components: [actionRow],
     flags: MessageFlags.Ephemeral

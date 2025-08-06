@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventByCreator } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
@@ -12,7 +13,7 @@ export async function execute(
   // Check if user is hosting an event
   const event = getEventByCreator(creatorId);
   if (!event) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ You are not currently hosting any events.`, 
       flags: MessageFlags.Ephemeral 
     });

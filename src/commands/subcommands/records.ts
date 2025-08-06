@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventRecords } from '../../utils/dataUtils';
 
@@ -5,7 +6,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const eventRecords = getEventRecords();
 
   if (eventRecords.length === 0) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: "No event records found.", 
       flags: MessageFlags.Ephemeral 
     });
@@ -77,5 +78,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   embed.setDescription(recordsText);
   embed.setFooter({ text: `Showing ${recentEvents.length} of ${eventRecords.length} records` });
 
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  await safeReply(interaction, { embeds: [embed], flags: MessageFlags.Ephemeral });
 }

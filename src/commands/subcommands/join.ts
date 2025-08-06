@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, saveActiveEvents } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
@@ -13,7 +14,7 @@ export async function execute(
 
   // Check if event code is valid
   if (!activeEvents[code]) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ Invalid event code: **${code}**. Please check the code and try again.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -24,7 +25,7 @@ export async function execute(
 
   // Check if user is already in the event
   if (event.participants[participantId]) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ You are already participating in this event.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -38,7 +39,7 @@ export async function execute(
 
   saveActiveEvents(activeEvents);
 
-  await interaction.reply({ 
+  await safeReply(interaction, { 
     content: `✅ You have successfully joined the **${event.event_type}** event!`, 
     flags: MessageFlags.Ephemeral 
   });

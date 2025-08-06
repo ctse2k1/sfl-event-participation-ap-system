@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, getEventRecords, saveActiveEvents, saveEventRecords, ACTIVE_EVENTS_FILE, EVENT_RECORDS_FILE } from '../../utils/dataUtils';
 import fs from 'fs';
@@ -24,13 +25,13 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     saveEventRecords([]);
     saveActiveEvents({});
     
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `✅ All event data has been reset. A backup was created at \`${backupFileName}\`.`, 
       flags: MessageFlags.Ephemeral 
     });
   } catch (error) {
     console.error('Failed to reset data:', error);
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ Failed to reset data: ${error}`, 
       flags: MessageFlags.Ephemeral 
     });
