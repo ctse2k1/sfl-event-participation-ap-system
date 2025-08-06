@@ -1,8 +1,19 @@
 # Design Document - SFL Event Participation AP System
 
 ## Architecture Overview
+![System Architecture Diagram] 
+*(Diagram placeholder - to be rendered during implementation)*
 
-The SFL Event Participation AP System is built using TypeScript and Discord.js v14. It follows a modular architecture with clear separation of concerns between command handling, data management, and business logic.
+The SFL Event Participation AP System follows a three-layer architecture:
+1. **Presentation Layer**: Discord.js command handlers
+2. **Business Logic**: Event/points processing engines  
+3. **Data Layer**: JSON file storage
+
+Built using TypeScript and Discord.js v14 with:
+- Strict type checking
+- Modular component design
+- Ephemeral response patterns
+- Automated backup system
 
 ## System Components
 
