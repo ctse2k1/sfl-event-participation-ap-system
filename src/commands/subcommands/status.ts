@@ -35,7 +35,14 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       { name: "Event ID", value: currentEvent.event_id, inline: true },
       { 
         name: "Duration", 
-        value: `${((Date.now() - Number(currentEvent.participants[userId].join_time)) / 60000).toFixed(1)} minutes`, 
+        value: (() => {
+          const joinTime = currentEvent.participants[userId].join_time;
+          const duration = (Date.now() - Number(joinTime)) / 60000;
+          console.log('Debug - Join Time:', joinTime, 'Type:', typeof joinTime);
+          console.log('Debug - Current Time:', Date.now());
+          console.log('Debug - Duration:', duration);
+          return isNaN(duration) ? 'Calculating...' : `${duration.toFixed(1)} minutes`;
+        })(), 
         inline: true 
       },
       { name: "Role", value: isHost ? "Host 👑" : "Participant", inline: true }
