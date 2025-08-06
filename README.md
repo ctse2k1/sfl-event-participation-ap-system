@@ -94,8 +94,8 @@ The `config.json` file defines event types and point rates:
 
 ## 📚 Additional Documentation
 
-- [Feature Specification](FEATURE_SPECIFICATION.md)
-- [Design Document](DESIGN_DOCUMENT.md)
+- FEATURE_SPECIFICATION.md
+- DESIGN_DOCUMENT.md
 
 ## 🔒 Permissions
 
