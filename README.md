@@ -112,4 +112,4 @@ Contributions are welcome! Please read our contributing guidelines before gettin
 
 ## 🐛 Issues and Support
 
-Found a bug? Have a suggestion? [Open an issue](https://github.com/your-repo/issues) on our GitHub repository.
+Found a bug? Have a suggestion? [Open an issue](https://github.com/ctse2k1/sfl-event-participation-ap-system/issues) on our GitHub repository.
