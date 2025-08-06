@@ -33,7 +33,11 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .addFields(
       { name: "Event Type", value: currentEvent.event_type, inline: true },
       { name: "Event ID", value: currentEvent.event_id, inline: true },
-      { name: "Join Time", value: new Date(currentEvent.participants[userId].join_time).toLocaleString(), inline: true },
+      { 
+        name: "Duration", 
+        value: `${((Date.now() - Number(currentEvent.participants[userId].join_time)) / 60000).toFixed(1)} minutes`, 
+        inline: true 
+      },
       { name: "Role", value: isHost ? "Host 👑" : "Participant", inline: true }
     )
     .setColor(isHost ? 0xFFD700 : 0x00FFFF)
