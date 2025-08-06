@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
-import { readEventData, writeEventData } from '../../utils/dataUtils';
+import { getActiveEvents, saveActiveEvents } from '../../utils/dataUtils';
 import { getUserActiveEvent } from '../../utils/eventUtils';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -14,7 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     return;
   }
 
-  const eventData = readEventData(guildId);
+  const activeEvents = getActiveEvents();
   const activeEvent = getUserActiveEvent(guildId, userId);
 
   if (!activeEvent) {
@@ -29,10 +29,10 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setTitle('Current Event Status')
     .setDescription('Details of the event you are currently participating in.')
     .addFields(
-      { name: 'Event Type', value: activeEvent.eventType, inline: true },
-      { name: 'Join Code', value: activeEvent.joinCode, inline: true },
-      { name: 'Host', value: `<@${activeEvent.hostId}>`, inline: true },
-      { name: 'Joined At', value: `<t:${Math.floor(activeEvent.joinTime / 1000)}:f>`, inline: true }
+      { name: 'Event Type', value: activeEvent.event_type, inline: true },
+      { name: 'Join Code', value: activeEvent.join_code, inline: true },
+      { name: 'Host', value: `<@${activeEvent.creator_id}>`, inline: true },
+      { name: 'Joined At', value: `<t:${Math.floor(new Date(activeEvent.join_time).getTime() / 1000)}:f>`, inline: true }
     )
     .setColor('#00FF00');
 
@@ -62,7 +62,7 @@ export async function handleLeaveEvent(interaction: any): Promise<void> {
     return;
   }
 
-  const eventData = readEventData(guildId);
+  const activeEvents = getActiveEvents();
   const activeEvent = getUserActiveEvent(guildId, userId);
 
   if (!activeEvent) {
@@ -76,18 +76,14 @@ export async function handleLeaveEvent(interaction: any): Promise<void> {
   // Remove the user from the event participants
   const updatedEvent = {
     ...activeEvent,
-    participants: activeEvent.participants.filter((p: any) => p.userId !== userId)
+    participants: activeEvent.participants.filter((p: any) => p.user_id !== userId)
   };
 
-  // Update the event data
-  const updatedEventData = {
-    ...eventData,
-    activeEvents: eventData.activeEvents.map((event: any) => 
-      event.joinCode === activeEvent.joinCode ? updatedEvent : event
-    )
-  };
+  // Update the active events
+  const updatedActiveEvents = { ...activeEvents };
+  updatedActiveEvents[activeEvent.join_code] = updatedEvent;
 
-  writeEventData(guildId, updatedEventData);
+  saveActiveEvents(updatedActiveEvents);
 
   await interaction.reply({
     content: 'You have successfully left the event.',
