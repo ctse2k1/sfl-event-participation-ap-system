@@ -31,7 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setDescription('Details of the event you are currently participating in.')
     .addFields(
       { name: 'Event Type', value: activeEvent.event_type, inline: true },
-      { name: 'Join Code', value: activeEvent.code, inline: true },
+      { name: 'Join Code', value: activeEvent.join_code, inline: true },
       { name: 'Host', value: `<@${activeEvent.creator_id}>`, inline: true },
       { name: 'Joined At', value: `<t:${Math.floor(new Date(activeEvent.participants[userId].join_time).getTime() / 1000)}:f>`, inline: true }
     )
@@ -84,7 +84,7 @@ export async function handleLeaveEvent(interaction: any): Promise<void> {
 
   // Update the active events
   const updatedActiveEvents = { ...activeEvents };
-  updatedActiveEvents[activeEvent.code] = updatedEvent;
+  updatedActiveEvents[activeEvent.join_code] = updatedEvent;
 
   saveActiveEvents(updatedActiveEvents);
 
