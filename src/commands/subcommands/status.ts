@@ -84,7 +84,8 @@ export async function handleLeaveEvent(interaction: any): Promise<void> {
 
   // Update the active events
   const updatedActiveEvents = { ...activeEvents };
-  updatedActiveEvents[activeEvent.join_code] = updatedEvent;
+  const eventKey = activeEvent.join_code || activeEvent.code;
+  updatedActiveEvents[eventKey] = updatedEvent;
 
   saveActiveEvents(updatedActiveEvents);
 
