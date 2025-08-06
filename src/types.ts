@@ -14,6 +14,7 @@ export interface ActiveEvent {
   event_type: string;
   code: string;
   start_time: string;
+  join_code?: string;
   participants: Record<string, ParticipantInfo>;
 }
 
