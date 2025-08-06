@@ -13,6 +13,7 @@ import * as idCommand from './subcommands/id';
 import * as summaryCommand from './subcommands/summary';
 import * as recordsCommand from './subcommands/records';
 import * as resetCommand from './subcommands/reset';
+import * as statusCommand from './subcommands/status';
 
 // Create the main event command with all subcommands
 export const data = new SlashCommandBuilder()
@@ -102,6 +103,13 @@ export const data = new SlashCommandBuilder()
     subcommand
       .setName('reset')
       .setDescription('Resets all event data and points (Admin only).')
+  )
+  
+  // Status subcommand
+  .addSubcommand(subcommand => 
+    subcommand
+      .setName('status')
+      .setDescription('Shows your currently joined event and allows you to leave.')
   );
 
 // Main execute function that routes to the appropriate subcommand
@@ -141,6 +149,9 @@ export async function execute(
       break;
     case 'reset':
       await resetCommand.execute(interaction);
+      break;
+    case 'status':
+      await statusCommand.execute(interaction);
       break;
     default:
       await interaction.reply({ 

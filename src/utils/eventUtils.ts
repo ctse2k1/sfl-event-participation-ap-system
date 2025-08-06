@@ -61,3 +61,20 @@ export function generateEventCode(): string {
   }
   return result;
 }
+
+// Get the active event for a specific user in a guild
+export function getUserActiveEvent(guildId: string, userId: string): ActiveEvent | null {
+  const activeEvents = getActiveEvents(guildId);
+  
+  for (const event of activeEvents) {
+    const participant = event.participants.find((p: any) => p.userId === userId);
+    if (participant) {
+      return {
+        ...event,
+        joinTime: participant.join_time
+      };
+    }
+  }
+  
+  return null;
+}
