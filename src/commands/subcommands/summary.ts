@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getEventRecords } from '../../utils/dataUtils';
 import { getDisplayNameById } from '../../utils/userUtils';

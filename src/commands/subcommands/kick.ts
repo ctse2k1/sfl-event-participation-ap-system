@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
@@ -12,7 +13,7 @@ export async function execute(
   const member = interaction.options.getUser('member');
   
   if (!member) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: "❌ Invalid member specified.", 
       flags: MessageFlags.Ephemeral 
     });
@@ -27,7 +28,7 @@ export async function execute(
   // Check if user is hosting an event
   const event = getEventByCreator(creatorId);
   if (!event) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ You are not currently hosting any events.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -36,7 +37,7 @@ export async function execute(
 
   // Check if member is in the event
   if (!event.participants[memberId]) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ This member is not participating in your event.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -45,7 +46,7 @@ export async function execute(
 
   // Check if member is the host
   if (memberId === creatorId) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ You cannot kick yourself from your own event. Use \`/event stop\` to end the event.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -61,7 +62,7 @@ export async function execute(
   );
   
   if (!eventConfig) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ Event type configuration not found for "${event.event_type}".`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -77,7 +78,7 @@ export async function execute(
   delete event.participants[memberId];
   saveActiveEvents(activeEvents);
 
-  await interaction.reply({ 
+  await safeReply(interaction, { 
     content: `✅ **${displayName}** has been removed from your event. They participated for ${durationMinutes.toFixed(2)} minutes and earned ${pointsEarned.toFixed(2)} points.`, 
     flags: MessageFlags.Ephemeral 
   });

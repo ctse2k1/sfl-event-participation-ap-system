@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { getEventRecords } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
@@ -63,5 +64,5 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     });
   }
   
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  await safeReply(interaction, { embeds: [embed], flags: MessageFlags.Ephemeral });
 }

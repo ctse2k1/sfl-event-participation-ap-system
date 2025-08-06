@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, Interaction } from 'discord.js';
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { EventConfig } from '../types';
 
@@ -13,6 +13,7 @@ import * as idCommand from './subcommands/id';
 import * as summaryCommand from './subcommands/summary';
 import * as recordsCommand from './subcommands/records';
 import * as resetCommand from './subcommands/reset';
+import * as statusCommand from './subcommands/status';
 
 // Create the main event command with all subcommands
 export const data = new SlashCommandBuilder()
@@ -102,6 +103,13 @@ export const data = new SlashCommandBuilder()
     subcommand
       .setName('reset')
       .setDescription('Resets all event data and points (Admin only).')
+  )
+  
+  // Status subcommand
+  .addSubcommand(subcommand => 
+    subcommand
+      .setName('status')
+      .setDescription('Shows your current event status and allows you to leave the event.')
   );
 
 // Main execute function that routes to the appropriate subcommand
@@ -142,10 +150,23 @@ export async function execute(
     case 'reset':
       await resetCommand.execute(interaction);
       break;
+    case 'status':
+      await statusCommand.execute(interaction);
+      break;
     default:
       await interaction.reply({ 
         content: `Unknown subcommand: ${subcommand}`, 
         flags: MessageFlags.Ephemeral 
       });
+  }
+}
+
+// Handle button interactions for leaving events
+export async function handleInteraction(
+  interaction: Interaction, 
+  eventConfigs: Record<string, EventConfig>
+): Promise<void> {
+  if (interaction.isButton() && interaction.customId.startsWith('leave_event_')) {
+    await statusCommand.handleLeaveEvent(interaction, eventConfigs);
   }
 }

@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { EventConfig } from '../../types';
+import { safeReply } from '../../utils/interactionUtils';
 
 export async function execute(
   interaction: ChatInputCommandInteraction, 
@@ -39,5 +40,8 @@ export async function execute(
     value: eventText || "No event codes available" 
   });
   
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  await safeReply(interaction, { 
+    embeds: [embed], 
+    flags: MessageFlags.Ephemeral 
+  });
 }

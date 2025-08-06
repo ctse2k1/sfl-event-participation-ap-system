@@ -1,3 +1,4 @@
+import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags, EmbedBuilder } from 'discord.js';
 import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
 import { generateEventCode } from '../../utils/eventUtils';
@@ -15,7 +16,7 @@ export async function execute(
   // Check if user is already hosting an event
   const existingEvent = getEventByCreator(creatorId);
   if (existingEvent) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ You are already hosting an event with code **${existingEvent.code}**. Stop that event first before starting a new one.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -24,7 +25,7 @@ export async function execute(
 
   // Check if event ID is valid
   if (!eventConfigs[eventId]) {
-    await interaction.reply({ 
+    await safeReply(interaction, { 
       content: `❌ Invalid event ID: **${eventId}**. Use \`/event id\` to see available event IDs.`, 
       flags: MessageFlags.Ephemeral 
     });
@@ -64,5 +65,5 @@ export async function execute(
     .setFooter({ text: `Started by ${getDisplayName(interaction)}` })
     .setTimestamp();
 
-  await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+  await safeReply(interaction, { embeds: [embed], flags: MessageFlags.Ephemeral });
 }
