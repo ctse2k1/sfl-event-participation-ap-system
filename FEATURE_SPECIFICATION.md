@@ -51,12 +51,25 @@ The SFL Event Participation AP System is a Discord bot designed to track partici
 ### `/event start [event_id]`
 - **Purpose**: Start a new event and generate a join code
 - **Parameters**: 
-  - `event_id`: The ID of the event type to start
+  - `event_id`: The ID of the event type to start (required)
+- **Validation**:
+  - Must be a valid event ID from config.json
+  - User cannot host multiple events simultaneously
 - **Behavior**:
-  - Creates a new event with the specified type
-  - Generates a random 6-character join code
-  - Adds the command user as the host
-  - Returns the join code for sharing with participants
+  - Creates new EventObject in memory
+  - Generates cryptographically random 6-character join code
+  - Initializes participants Map with host as first entry
+  - Starts event timer
+  - Returns ephemeral response with join code
+- **Error Cases**:
+  - Invalid event ID: "❌ Unknown event type"
+  - Already hosting: "❌ You're already hosting an event"
+- **Data Flow**:
+  1. Validate inputs
+  2. Create event record
+  3. Generate join code
+  4. Update activeEvents Map
+  5. Send response
 
 ### `/event join [code]`
 - **Purpose**: Join an active event using a code

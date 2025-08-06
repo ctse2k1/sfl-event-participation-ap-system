@@ -1,8 +1,19 @@
 # Design Document - SFL Event Participation AP System
 
 ## Architecture Overview
+![System Architecture Diagram] 
+*(Diagram placeholder - to be rendered during implementation)*
 
-The SFL Event Participation AP System is built using TypeScript and Discord.js v14. It follows a modular architecture with clear separation of concerns between command handling, data management, and business logic.
+The SFL Event Participation AP System follows a three-layer architecture:
+1. **Presentation Layer**: Discord.js command handlers
+2. **Business Logic**: Event/points processing engines  
+3. **Data Layer**: JSON file storage
+
+Built using TypeScript and Discord.js v14 with:
+- Strict type checking
+- Modular component design
+- Ephemeral response patterns
+- Automated backup system
 
 ## System Components
 
@@ -100,13 +111,20 @@ interface EventRecord {
 
 ### 4. Data Persistence
 
-Data is stored in JSON files organized by guild ID:
+Data is stored in flat JSON files:
+- `active_events.json` - Currently running events
+- `event_records.json` - Historical event records  
+- `user_points.json` - Accumulated user points
 
-- `data/{guild_id}/active_events.json` - Currently running events
-- `data/{guild_id}/event_records.json` - Historical event records
-- `data/{guild_id}/user_points.json` - Accumulated user points
+*Implementation Notes:*
+- Single-instance storage (multi-guild support planned)
+- Atomic write operations prevent corruption
+- Daily automated backups
 
-The system uses a simple file-based storage system with atomic write operations to prevent data corruption.
+*Future Enhancement:*
+- Guild-specific data isolation
+- Migration path for existing records
+- Cross-server aggregation
 
 ## Key Technical Decisions
 
