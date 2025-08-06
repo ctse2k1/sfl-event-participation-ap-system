@@ -20,8 +20,6 @@ export async function execute(
     return;
   }
 
-  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
   // Get participant information
   const participantList = [];
   for (const [userId, data] of Object.entries(event.participants)) {
@@ -71,5 +69,8 @@ export async function execute(
 
   embed.addFields({ name: `Participants (${participantList.length})`, value: participantsText || "No participants" });
 
-  await interaction.editReply({ embeds: [embed] });
+  await safeReply(interaction, { 
+    embeds: [embed],
+    flags: MessageFlags.Ephemeral 
+  });
 }
