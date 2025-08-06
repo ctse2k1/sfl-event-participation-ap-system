@@ -1,54 +1,65 @@
-# SFL Event Participation AP System
-
-A Discord bot for tracking event participation and awarding activity points, written in TypeScript using Discord.js v14.
+# 🎮 SFL Event Participation Activity Points (AP) System
 
 ## Overview
 
-This bot helps community managers track participation in events and automatically award activity points based on attendance duration. It uses Discord's slash commands for all interactions, making it intuitive and easy to use for both event hosts and participants.
+The SFL Event Participation AP System is a powerful Discord bot designed to streamline community event tracking and reward participation. Built with TypeScript and Discord.js v14, this bot provides an intuitive way to manage events, track attendance, and award activity points automatically.
 
-## Features
+## 🌟 Key Features
 
-- Start events with unique join codes
-- Track participant attendance and duration
-- Calculate activity points based on participation time and event type
-- View personal participation history and points
-- View server-wide leaderboard
-- Admin commands for managing events
-- All commands use Discord's slash command system
-- All command responses are ephemeral (only visible to the command user)
-- Uses server display names instead of usernames for better identification
+- 🚀 Easy event creation with unique join codes
+- 📊 Automatic attendance and duration tracking
+- 🏆 Dynamic activity points calculation
+- 📈 Personal and server-wide point tracking
+- 👥 Flexible event management
+- 🔒 Secure, ephemeral command responses
 
-## Commands
+## 🤖 Commands Overview
 
-All commands are subcommands under the main `/event` command:
+All commands are subcommands under `/event`:
 
-- `/event start [event_id]` - Start a new event and generate a join code
-- `/event join [code]` - Join an active event using a code
-- `/event stop` - Stop the event you are hosting and calculate points
-- `/event kick [member]` - Remove a participant from your event
-- `/event list` - List all participants in your current event
-- `/event me` - Show your total activity points and event history
-- `/event id` - List all available event codes and their types
-- `/event summary` - Display the point leaderboard for the server
-- `/event records` - Show all event participation records
-- `/event status` - Show your current event participation details
-- `/event reset` - Reset all event data and points (Admin only)
+| Command | Description | 
+|---------|-------------|
+| `/event start [event_id]` | Start a new event and generate a join code |
+| `/event join [code]` | Join an active event using a code |
+| `/event stop` | Stop your event and calculate points |
+| `/event kick [member]` | Remove a participant from your event |
+| `/event list` | List participants in your current event |
+| `/event me` | View your total activity points and event history |
+| `/event id` | List available event codes and types |
+| `/event summary` | Display server-wide point leaderboard |
+| `/event records` | Show your event participation records |
+| `/event status` | Check your current event participation |
+| `/event reset` | Reset all event data (Admin only) |
 
-## Setup
+## 🛠 Setup and Installation
 
+### Prerequisites
+- Node.js 16.9.0+
+- Discord Bot Token
+
+### Installation Steps
 1. Clone the repository
-2. Install dependencies with `npm install`
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 3. Create a `.env` file with your Discord bot token:
    ```
-   DISCORD_TOKEN=your_token_here
+   DISCORD_TOKEN=your_discord_bot_token_here
    ```
-4. Configure events in `config.json` (see [Configuration](#configuration) section)
-5. Build the project with `npm run build`
-6. Start the bot with `npm start`
+4. Configure event types in `config.json`
+5. Build the project:
+   ```bash
+   npm run build
+   ```
+6. Start the bot:
+   ```bash
+   npm start
+   ```
 
-## Configuration
+## 🔧 Configuration
 
-The bot uses a `config.json` file to define event types and their point values. Example:
+The `config.json` file defines event types and point rates:
 
 ```json
 {
@@ -72,24 +83,33 @@ The bot uses a `config.json` file to define event types and their point values. 
 }
 ```
 
-## Development
+## 💻 Development Commands
 
-- `npm run dev` - Run the bot in development mode with hot reloading
-- `npm run watch` - Watch for changes and rebuild automatically
-- `npm run build` - Build the TypeScript project
-- `npm start` - Start the bot
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development mode with hot reloading |
+| `npm run watch` | Watch for changes and rebuild |
+| `npm run build` | Build TypeScript project |
+| `npm start` | Start the bot |
 
-## Requirements
+## 📚 Additional Documentation
 
-- Node.js 16.9.0 or higher
-- Discord.js v14
-- TypeScript 5.0.0 or higher
+- [Feature Specification](FEATURE_SPECIFICATION.md)
+- [Design Document](DESIGN_DOCUMENT.md)
 
-## Documentation
+## 🔒 Permissions
 
-- [Feature Specification](FEATURE_SPECIFICATION.md) - Detailed feature specifications
-- [Design Document](DESIGN_DOCUMENT.md) - Technical design and architecture
+- Requires Discord bot permissions to manage server interactions
+- Admin commands restricted to server administrators
 
-## License
+## 📝 License
 
-ISC
+ISC License
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our contributing guidelines before getting started.
+
+## 🐛 Issues and Support
+
+Found a bug? Have a suggestion? [Open an issue](https://github.com/your-repo/issues) on our GitHub repository.
