@@ -46,9 +46,13 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         }
       }
       
-      const pointsText = record.points_earned !== undefined 
-        ? ` | Points: ${record.points_earned.toFixed(2)}` 
-        : '';
+      // Get points for the first participant (assuming single participant for now)
+      let pointsEarned = 0;
+      if (record.participants && Object.keys(record.participants).length > 0) {
+        const firstParticipantId = Object.keys(record.participants)[0];
+        pointsEarned = record.participants[firstParticipantId]?.points_earned || 0;
+      }
+      const pointsText = ` | Points: ${pointsEarned.toFixed(2)}`;
       
       recordsText += `**${record.event_type}** - ${date}\n`;
       recordsText += `Participant: ${participantName}\n`;
@@ -57,9 +61,12 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       console.error(`Failed to process record:`, error);
       
       const userId = record.user_id || record.creator_id || 'unknown';
-      const pointsText = record.points_earned !== undefined 
-        ? ` | Points: ${record.points_earned.toFixed(2)}` 
-        : '';
+      let pointsEarned = 0;
+      if (record.participants && Object.keys(record.participants).length > 0) {
+        const firstParticipantId = Object.keys(record.participants)[0];
+        pointsEarned = record.participants[firstParticipantId]?.points_earned || 0;
+      }
+      const pointsText = ` | Points: ${pointsEarned.toFixed(2)}`;
       
       recordsText += `**${record.event_type}** - ${date}\n`;
       recordsText += `Participant: Unknown (${userId})\n`;

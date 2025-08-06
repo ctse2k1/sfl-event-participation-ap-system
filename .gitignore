@@ -8,8 +8,7 @@ dist/
 .env
 
 # Data files
-data/active_events.json
-data/event_records.json
+data/*.json
 
 # Logs
 logs
