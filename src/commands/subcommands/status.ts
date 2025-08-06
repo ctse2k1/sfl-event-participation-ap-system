@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+import { ChatInputCommandInteraction, Interaction, EmbedBuilder, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getActiveEvents } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
 
@@ -47,7 +47,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   });
 }
 
-export async function handleLeaveEvent(interaction: any, eventConfigs: Record<string, any>): Promise<void> {
+export async function handleLeaveEvent(interaction: Interaction, eventConfigs: Record<string, any>): Promise<void> {
+  if (!interaction.isButton()) return;
+
   const userId = interaction.user.id;
   const activeEvents = getActiveEvents();
 
@@ -57,10 +59,12 @@ export async function handleLeaveEvent(interaction: any, eventConfigs: Record<st
   );
 
   if (!currentEvent) {
-    await interaction.reply({
-      content: "You are not currently participating in any active events.",
-      flags: MessageFlags.Ephemeral
-    });
+    if ('reply' in interaction) {
+      await (interaction as any).reply({
+        content: "You are not currently participating in any active events.",
+        flags: MessageFlags.Ephemeral
+      });
+    }
     return;
   }
 
@@ -77,9 +81,16 @@ export async function handleLeaveEvent(interaction: any, eventConfigs: Record<st
   const fs = require('fs');
   fs.writeFileSync('./data/active_events.json', JSON.stringify(updatedActiveEvents, null, 2));
 
-  await interaction.update({
-    content: `You have left the event: ${currentEvent.event_type}`,
-    embeds: [],
-    components: []
-  });
+  if ('update' in interaction) {
+    await (interaction as any).update({
+      content: `You have left the event: ${currentEvent.event_type}`,
+      embeds: [],
+      components: []
+    });
+  } else if ('reply' in interaction) {
+    await (interaction as any).reply({
+      content: `You have left the event: ${currentEvent.event_type}`,
+      flags: MessageFlags.Ephemeral
+    });
+  }
 }

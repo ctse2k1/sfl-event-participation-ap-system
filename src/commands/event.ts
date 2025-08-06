@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js';
+import { SlashCommandBuilder, Interaction } from 'discord.js';
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { EventConfig } from '../types';
 
@@ -163,7 +163,7 @@ export async function execute(
 
 // Handle button interactions for leaving events
 export async function handleInteraction(
-  interaction: any, 
+  interaction: Interaction, 
   eventConfigs: Record<string, EventConfig>
 ): Promise<void> {
   if (interaction.isButton() && interaction.customId.startsWith('leave_event_')) {
