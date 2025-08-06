@@ -31,7 +31,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setDescription('Details of the event you are currently participating in.')
     .addFields(
       { name: 'Event Type', value: activeEvent.event_type, inline: true },
-      { name: 'Join Code', value: activeEvent.join_code, inline: true },
+      { name: 'Join Code', value: activeEvent.join_code || activeEvent.code, inline: true },
       { name: 'Host', value: `<@${activeEvent.creator_id}>`, inline: true },
       { name: 'Joined At', value: `<t:${Math.floor(new Date(activeEvent.participants[userId].join_time).getTime() / 1000)}:f>`, inline: true }
     )
