@@ -20,30 +20,39 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     return;
   }
 
+  // Determine if the user is the host
+  const isHost = currentEvent.creator_id === userId;
+
   // Create an embed with event details
   const embed = new EmbedBuilder()
     .setTitle(`🎉 Current Event Status`)
-    .setDescription(`You are currently participating in an event.`)
+    .setDescription(isHost 
+      ? `You are hosting this event.` 
+      : `You are currently participating in an event.`
+    )
     .addFields(
       { name: "Event Type", value: currentEvent.event_type, inline: true },
       { name: "Event ID", value: currentEvent.event_id, inline: true },
-      { name: "Join Time", value: new Date(currentEvent.participants[userId].join_time).toLocaleString(), inline: true }
+      { name: "Join Time", value: new Date(currentEvent.participants[userId].join_time).toLocaleString(), inline: true },
+      { name: "Role", value: isHost ? "Host 👑" : "Participant", inline: true }
     )
-    .setColor(0x00FFFF)
+    .setColor(isHost ? 0xFFD700 : 0x00FFFF)
     .setTimestamp();
 
-  // Create a button to leave the event
-  const leaveButton = new ButtonBuilder()
-    .setCustomId(`leave_event_${currentEvent.event_id}`)
-    .setLabel('Leave Event')
-    .setStyle(ButtonStyle.Danger);
-
-  const actionRow = new ActionRowBuilder<ButtonBuilder>()
-    .addComponents(leaveButton);
+  // Only add leave button for non-hosts
+  const components = isHost ? [] : [
+    new ActionRowBuilder<ButtonBuilder>()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId(`leave_event_${currentEvent.event_id}`)
+          .setLabel('Leave Event')
+          .setStyle(ButtonStyle.Danger)
+      )
+  ];
 
   await safeReply(interaction, {
     embeds: [embed],
-    components: [actionRow],
+    components,
     flags: MessageFlags.Ephemeral
   });
 }
@@ -63,6 +72,17 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
     if ('reply' in interaction) {
       await (interaction as any).reply({
         content: "You are not currently participating in any active events.",
+        flags: MessageFlags.Ephemeral
+      });
+    }
+    return;
+  }
+
+  // Prevent host from leaving
+  if (currentEvent.creator_id === userId) {
+    if ('reply' in interaction) {
+      await (interaction as any).reply({
+        content: "As the event host, you cannot leave the event. Use `/event stop` to end the event.",
         flags: MessageFlags.Ephemeral
       });
     }
