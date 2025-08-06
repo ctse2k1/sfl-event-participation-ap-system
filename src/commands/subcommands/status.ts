@@ -36,27 +36,18 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       { 
         name: "Duration", 
         value: (() => {
-          console.log('Debug - Full Current Event:', JSON.stringify(currentEvent, null, 2));
-          console.log('Debug - Participants:', JSON.stringify(currentEvent.participants, null, 2));
-          console.log('Debug - User ID:', userId);
-          console.log('Debug - Participant Details:', JSON.stringify(currentEvent.participants[userId], null, 2));
-
           const joinTime = currentEvent.participants[userId].join_time;
           
-          // Try different parsing methods
+          // Robust parsing of join time
           const parsedTime = joinTime ? 
             (typeof joinTime === 'string' ? 
               (isNaN(Number(joinTime)) ? Date.parse(joinTime) : Number(joinTime)) 
               : joinTime) 
             : null;
-
-          console.log('Debug - Parsed Join Time:', parsedTime, 'Type:', typeof parsedTime);
           
           const duration = parsedTime ? 
             (Date.now() - parsedTime) / 60000 : 
             null;
-
-          console.log('Debug - Calculated Duration:', duration);
 
           return duration !== null && !isNaN(duration) 
             ? `${duration.toFixed(1)} minutes` 
