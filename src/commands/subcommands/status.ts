@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, EmbedBuilder, MessageFlags } from 'discord.js';
 import { getActiveEvents, saveActiveEvents } from '../../utils/dataUtils';
 import { getUserActiveEvent } from '../../utils/eventUtils';
+import { ActiveEvent } from '../../types';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const guildId = interaction.guildId;
@@ -30,9 +31,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     .setDescription('Details of the event you are currently participating in.')
     .addFields(
       { name: 'Event Type', value: activeEvent.event_type, inline: true },
-      { name: 'Join Code', value: activeEvent.join_code, inline: true },
+      { name: 'Join Code', value: activeEvent.code, inline: true },
       { name: 'Host', value: `<@${activeEvent.creator_id}>`, inline: true },
-      { name: 'Joined At', value: `<t:${Math.floor(new Date(activeEvent.join_time).getTime() / 1000)}:f>`, inline: true }
+      { name: 'Joined At', value: `<t:${Math.floor(new Date(activeEvent.participants[userId].join_time).getTime() / 1000)}:f>`, inline: true }
     )
     .setColor('#00FF00');
 
@@ -74,14 +75,16 @@ export async function handleLeaveEvent(interaction: any): Promise<void> {
   }
 
   // Remove the user from the event participants
-  const updatedEvent = {
+  const updatedEvent: ActiveEvent = {
     ...activeEvent,
-    participants: activeEvent.participants.filter((p: any) => p.user_id !== userId)
+    participants: Object.fromEntries(
+      Object.entries(activeEvent.participants).filter(([key]) => key !== userId)
+    )
   };
 
   // Update the active events
   const updatedActiveEvents = { ...activeEvents };
-  updatedActiveEvents[activeEvent.join_code] = updatedEvent;
+  updatedActiveEvents[activeEvent.code] = updatedEvent;
 
   saveActiveEvents(updatedActiveEvents);
 
