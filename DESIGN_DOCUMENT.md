@@ -111,13 +111,20 @@ interface EventRecord {
 
 ### 4. Data Persistence
 
-Data is stored in JSON files organized by guild ID:
+Data is stored in flat JSON files:
+- `active_events.json` - Currently running events
+- `event_records.json` - Historical event records  
+- `user_points.json` - Accumulated user points
 
-- `data/{guild_id}/active_events.json` - Currently running events
-- `data/{guild_id}/event_records.json` - Historical event records
-- `data/{guild_id}/user_points.json` - Accumulated user points
+*Implementation Notes:*
+- Single-instance storage (multi-guild support planned)
+- Atomic write operations prevent corruption
+- Daily automated backups
 
-The system uses a simple file-based storage system with atomic write operations to prevent data corruption.
+*Future Enhancement:*
+- Guild-specific data isolation
+- Migration path for existing records
+- Cross-server aggregation
 
 ## Key Technical Decisions
 
