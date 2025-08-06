@@ -127,6 +127,17 @@ The SFL Event Participation AP System is a Discord bot designed to track partici
   - Shows event type, date, duration, and points for each record
   - Limits display to recent events with pagination
 
+### `/event status`
+- **Purpose**: Show current event participation details
+- **Parameters**: None
+- **Behavior**:
+  - Checks if the user is currently participating in an event
+  - Displays event type and event ID
+  - Shows participation duration in minutes
+  - Indicates if the user is the event host
+  - Provides a button to leave the event (not available for hosts)
+  - Prevents hosts from leaving their own event
+
 ### `/event reset`
 - **Purpose**: Reset all event data and points
 - **Parameters**: None

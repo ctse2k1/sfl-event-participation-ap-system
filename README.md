@@ -31,6 +31,7 @@ All commands are subcommands under the main `/event` command:
 - `/event id` - List all available event codes and their types
 - `/event summary` - Display the point leaderboard for the server
 - `/event records` - Show all event participation records
+- `/event status` - Show your current event participation details
 - `/event reset` - Reset all event data and points (Admin only)
 
 ## Setup
