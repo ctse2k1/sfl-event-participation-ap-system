@@ -1,7 +1,8 @@
 # Design Document - SFL Event Participation AP System
 
 ## Architecture Overview
-![System Architecture Diagram] 
+
+### System Architecture Diagram
 ```mermaid
 graph TD
     A[Discord API] --> B[Discord Bot]
