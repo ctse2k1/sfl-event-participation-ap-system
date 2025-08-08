@@ -2,7 +2,38 @@
 
 ## Architecture Overview
 ![System Architecture Diagram] 
-*(Diagram placeholder - to be rendered during implementation)*
+```mermaid
+graph TD
+    A[Discord API] --> B[Discord Bot]
+    B --> C[Command Router]
+    C --> D[Event Commands]
+    C --> E[Participant Commands]
+    C --> F[Admin Commands]
+    
+    D --> G[Start Event]
+    D --> H[Join Event]
+    D --> I[Stop Event]
+    D --> J[Event Status]
+    
+    E --> K[View Points]
+    E --> L[View History]
+    
+    F --> M[Reset System]
+    
+    subgraph Core Systems
+        G --> N[Event Manager]
+        H --> N
+        I --> N
+        N --> O[Data Utils]
+        N --> P[Point Calculator]
+        O --> Q[Active Events JSON]
+        O --> R[User Data JSON]
+        P --> S[Event Configs]
+    end
+    
+    S -->|Configuration| T[config.json]
+    U[.env] -->|Token| B
+```
 
 The SFL Event Participation AP System follows a three-layer architecture:
 1. **Presentation Layer**: Discord.js command handlers
