@@ -1,12 +1,15 @@
 import { 
-  BaseInteraction,
+  CommandInteraction, 
+  MessageComponentInteraction,
   InteractionReplyOptions, 
   InteractionEditReplyOptions, 
   MessageFlags 
 } from 'discord.js';
 
+type ReplyableInteraction = CommandInteraction | MessageComponentInteraction;
+
 export async function safeReply(
-  interaction: BaseInteraction, 
+  interaction: ReplyableInteraction, 
   options: InteractionReplyOptions & { flags?: MessageFlags }
 ): Promise<void> {
   // Convert InteractionReplyOptions to InteractionEditReplyOptions
