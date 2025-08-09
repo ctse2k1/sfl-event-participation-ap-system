@@ -79,13 +79,23 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 }
 
 export async function handleLeaveEvent(interaction: Interaction, eventConfigs: Record<string, any>): Promise<void> {
-  if (!interaction.isButton()) return;
+  console.log('[DEBUG] Leave button clicked - interaction received');
+  
+  if (!interaction.isButton()) {
+    console.log('[DEBUG] Interaction is not a button - exiting');
+    return;
+  }
 
-  // Defer the reply immediately to prevent timeout
-  await interaction.deferReply({ ephemeral: true });
+  try {
+    console.log('[DEBUG] Deferring interaction reply');
+    await interaction.deferReply({ ephemeral: true });
+    console.log('[DEBUG] Interaction deferred successfully');
 
   const userId = interaction.user.id;
+  console.log(`[DEBUG] Processing leave request for user: ${userId}`);
+  
   const activeEvents = getActiveEvents();
+  console.log(`[DEBUG] Found ${Object.keys(activeEvents).length} active events`);
 
   // Find the event the user is currently in
   const currentEvent = Object.values(activeEvents).find(event => 
@@ -93,12 +103,14 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
   );
 
   if (!currentEvent) {
-    await safeReply(interaction, {
-      content: "You are not currently participating in any active events.",
-      flags: MessageFlags.Ephemeral
+    console.log('[DEBUG] User is not participating in any event');
+    await interaction.editReply({
+      content: "You are not currently participating in any active events."
     });
     return;
   }
+
+  console.log(`[DEBUG] Found event: ${currentEvent.event_type} (ID: ${currentEvent.event_id})`);
 
   // Prevent host from leaving
   if (currentEvent.creator_id === userId) {
@@ -113,6 +125,7 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
   delete currentEvent.participants[userId];
 
   // Save the updated active events
+  console.log(`[DEBUG] Updating event data for event ID: ${currentEvent.event_id}`);
   const updatedActiveEvents = {
     ...activeEvents,
     [currentEvent.event_id]: currentEvent
