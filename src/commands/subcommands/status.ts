@@ -81,6 +81,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 export async function handleLeaveEvent(interaction: Interaction, eventConfigs: Record<string, any>): Promise<void> {
   if (!interaction.isButton()) return;
 
+  // Defer the reply immediately to prevent timeout
+  await interaction.deferReply({ ephemeral: true });
+
   const userId = interaction.user.id;
   const activeEvents = getActiveEvents();
 
@@ -119,15 +122,13 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
   const fs = require('fs').promises;
   try {
     await fs.writeFile('./data/active_events.json', JSON.stringify(updatedActiveEvents, null, 2));
-    await safeReply(interaction, {
-      content: `You have left the event: ${currentEvent.event_type}`,
-      flags: MessageFlags.Ephemeral
+    await interaction.editReply({
+      content: `You have left the event: ${currentEvent.event_type}`
     });
   } catch (error) {
     console.error('Error saving event data:', error);
-    await safeReply(interaction, {
-      content: "Failed to leave the event. Please try again.",
-      flags: MessageFlags.Ephemeral
+    await interaction.editReply({
+      content: "Failed to leave the event. Please try again."
     });
   }
 }
