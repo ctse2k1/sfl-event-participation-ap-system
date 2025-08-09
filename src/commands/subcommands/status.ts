@@ -90,23 +90,19 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
   );
 
   if (!currentEvent) {
-    if ('reply' in interaction) {
-      await (interaction as any).reply({
-        content: "You are not currently participating in any active events.",
-        flags: MessageFlags.Ephemeral
-      });
-    }
+    await safeReply(interaction, {
+      content: "You are not currently participating in any active events.",
+      flags: MessageFlags.Ephemeral
+    });
     return;
   }
 
   // Prevent host from leaving
   if (currentEvent.creator_id === userId) {
-    if ('reply' in interaction) {
-      await (interaction as any).reply({
-        content: "As the event host, you cannot leave the event. Use `/event stop` to end the event.",
-        flags: MessageFlags.Ephemeral
-      });
-    }
+    await safeReply(interaction, {
+      content: "As the event host, you cannot leave the event. Use `/event stop` to end the event.",
+      flags: MessageFlags.Ephemeral
+    });
     return;
   }
 
@@ -119,19 +115,18 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
     [currentEvent.event_id]: currentEvent
   };
 
-  // Update the active events in the data store
-  const fs = require('fs');
-  fs.writeFileSync('./data/active_events.json', JSON.stringify(updatedActiveEvents, null, 2));
-
-  if ('update' in interaction) {
-    await (interaction as any).update({
+  // Update the active events in the data store asynchronously
+  const fs = require('fs').promises;
+  try {
+    await fs.writeFile('./data/active_events.json', JSON.stringify(updatedActiveEvents, null, 2));
+    await safeReply(interaction, {
       content: `You have left the event: ${currentEvent.event_type}`,
-      embeds: [],
-      components: []
+      flags: MessageFlags.Ephemeral
     });
-  } else if ('reply' in interaction) {
-    await (interaction as any).reply({
-      content: `You have left the event: ${currentEvent.event_type}`,
+  } catch (error) {
+    console.error('Error saving event data:', error);
+    await safeReply(interaction, {
+      content: "Failed to leave the event. Please try again.",
       flags: MessageFlags.Ephemeral
     });
   }
