@@ -90,6 +90,10 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
     console.log('[DEBUG] Deferring interaction reply');
     await interaction.deferReply({ ephemeral: true });
     console.log('[DEBUG] Interaction deferred successfully');
+  } catch (error) {
+    console.error('[ERROR] Failed to defer interaction:', error);
+    return;
+  }
 
   const userId = interaction.user.id;
   console.log(`[DEBUG] Processing leave request for user: ${userId}`);
