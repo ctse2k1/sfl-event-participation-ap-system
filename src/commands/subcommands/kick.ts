@@ -1,9 +1,9 @@
 import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
+import { getActiveEvents, getEventByCreator, saveActiveEvents, addEventRecord } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
 import { getDisplayNameById } from '../../utils/userUtils';
-import { EventConfig } from '../../types';
+import { EventConfig, EventRecord } from '../../types';
 
 export async function execute(
   interaction: ChatInputCommandInteraction, 
@@ -86,6 +86,18 @@ export async function execute(
   // Remove member from event in activeEvents
   delete eventFromStorage.participants[memberId];
   saveActiveEvents(activeEvents);
+  
+  // Create and save event record
+  const record: EventRecord = {
+    user_id: memberId,
+    event_id: event.event_id,
+    event_type: event.event_type,
+    start_time: joinTime.toISOString(),
+    end_time: kickTime.toISOString(),
+    points_earned: pointsEarned,
+    duration_minutes: durationMinutes, // Add missing property
+  };
+  addEventRecord(record);
 
   await safeReply(interaction, { 
     content: `✅ **${displayName}** has been removed from your event. They participated for ${durationMinutes.toFixed(2)} minutes and earned ${pointsEarned.toFixed(2)} points.`, 
