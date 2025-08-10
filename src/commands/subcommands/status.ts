@@ -2,6 +2,7 @@ import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, Interaction, EmbedBuilder, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getActiveEvents } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
+import { getUserEvents, saveUserEvents } from '../../utils/userEventUtils';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const userId = interaction.user.id;
@@ -125,6 +126,23 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
     return;
   }
 
+  // Calculate points earned
+  const joinTime = new Date(currentEvent.participants[userId].join_time);
+  const leaveTime = new Date();
+  const durationMinutes = (leaveTime.getTime() - joinTime.getTime()) / (1000 * 60);
+  const pointsEarned = Math.floor(durationMinutes * eventConfigs[currentEvent.event_id].points_per_minute);
+  
+  // Update user's event records
+  const userEvents = getUserEvents(userId) || [];
+  userEvents.push({
+    event_id: currentEvent.event_id,
+    event_type: currentEvent.event_type,
+    join_time: joinTime.toISOString(),
+    leave_time: leaveTime.toISOString(),
+    points_earned: pointsEarned
+  });
+  saveUserEvents(userId, userEvents);
+  
   // Remove the user from the event
   delete currentEvent.participants[userId];
 

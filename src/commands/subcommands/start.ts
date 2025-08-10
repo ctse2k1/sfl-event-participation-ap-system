@@ -36,7 +36,7 @@ export async function execute(
   const code = generateEventCode();
   
   // Create new event
-  activeEvents[code] = {
+  activeEvents[eventId] = {
     event_id: eventId,
     event_type: eventConfigs[eventId].event_type,
     creator_id: creatorId,
