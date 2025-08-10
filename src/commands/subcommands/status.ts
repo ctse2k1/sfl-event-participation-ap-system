@@ -146,17 +146,13 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
   // Remove the user from the event
   delete currentEvent.participants[userId];
 
-  // Save the updated active events
-  console.log(`[DEBUG] Updating event data for event ID: ${currentEvent.event_id}`);
-  const updatedActiveEvents = {
-    ...activeEvents,
-    [currentEvent.event_id]: currentEvent
-  };
-
-  // Update the active events in the data store asynchronously
-  const fs = require('fs').promises;
+  // Save the updated active events using the proper utility
   try {
-    await fs.writeFile('./data/active_events.json', JSON.stringify(updatedActiveEvents, null, 2));
+    // Update event by code instead of ID
+    activeEvents[currentEvent.code] = currentEvent;
+    const { saveActiveEvents } = require('../../utils/dataUtils');
+    saveActiveEvents(activeEvents);
+    
     await interaction.editReply({
       content: `You have left the event: ${currentEvent.event_type}`
     });
