@@ -89,7 +89,7 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
 
   try {
     console.log('[DEBUG] Deferring interaction reply');
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
     console.log('[DEBUG] Interaction deferred successfully');
   } catch (error) {
     console.error('[ERROR] Failed to defer interaction:', error);
@@ -126,25 +126,32 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
     return;
   }
 
-  // Calculate points earned
+  // Calculate points and remove participant (same as kick command)
   const joinTime = new Date(currentEvent.participants[userId].join_time);
   const leaveTime = new Date();
   const durationMinutes = (leaveTime.getTime() - joinTime.getTime()) / (1000 * 60);
-  const pointsEarned = Math.floor(durationMinutes * eventConfigs[currentEvent.event_id].points_per_minute);
+  const pointsEarned = durationMinutes * eventConfigs[currentEvent.event_id].points_per_minute;
   
-  // Update user's event records
-  const userEvents = getUserEvents(userId) || [];
-  userEvents.push({
+  // Remove user from event
+  delete currentEvent.participants[userId];
+  
+  // Create and save event record in standard format
+  const { addEventRecord } = require('../../utils/dataUtils');
+  const record = {
     event_id: currentEvent.event_id,
     event_type: currentEvent.event_type,
-    join_time: joinTime.toISOString(),
-    leave_time: leaveTime.toISOString(),
-    points_earned: pointsEarned
-  });
-  saveUserEvents(userId, userEvents);
-  
-  // Remove the user from the event
-  delete currentEvent.participants[userId];
+    creator_id: currentEvent.creator_id,
+    start_time: joinTime.toISOString(),
+    end_time: leaveTime.toISOString(),
+    duration_minutes: durationMinutes,
+    participants: {
+      [userId]: {
+        duration_minutes: durationMinutes,
+        points_earned: pointsEarned
+      }
+    }
+  };
+  addEventRecord(record);
 
   // Save the updated active events using the proper utility
   try {
