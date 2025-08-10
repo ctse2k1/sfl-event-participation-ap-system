@@ -87,15 +87,20 @@ export async function execute(
   delete eventFromStorage.participants[memberId];
   saveActiveEvents(activeEvents);
   
-  // Create and save event record
+  // Create and save event record in standard format
   const record: EventRecord = {
-    user_id: memberId,
     event_id: event.event_id,
     event_type: event.event_type,
+    creator_id: event.creator_id,
     start_time: joinTime.toISOString(),
     end_time: kickTime.toISOString(),
-    points_earned: pointsEarned,
-    duration_minutes: durationMinutes, // Add missing property
+    duration_minutes: durationMinutes,
+    participants: {
+      [memberId]: {
+        duration_minutes: durationMinutes,
+        points_earned: pointsEarned
+      }
+    }
   };
   addEventRecord(record);
 
