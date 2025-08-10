@@ -1,9 +1,9 @@
 import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
-import { getActiveEvents, getEventByCreator, saveActiveEvents } from '../../utils/dataUtils';
+import { getActiveEvents, getEventByCreator, saveActiveEvents, addEventRecord } from '../../utils/dataUtils';
 import { calculateAndFinalizePoints } from '../../utils/eventUtils';
 import { getDisplayNameById } from '../../utils/userUtils';
-import { EventConfig } from '../../types';
+import { EventConfig, EventRecord } from '../../types';
 
 export async function execute(
   interaction: ChatInputCommandInteraction, 
@@ -55,6 +55,15 @@ export async function execute(
 
   // Calculate points for the kicked member
   const activeEvents = getActiveEvents();
+  // Get the event directly from activeEvents using the event code
+  const eventFromStorage = activeEvents[event.code];
+  if (!eventFromStorage) {
+    await safeReply(interaction, { 
+      content: `❌ Event not found in active events.`, 
+      flags: MessageFlags.Ephemeral 
+    });
+    return;
+  }
   
   // Find the event config by matching the event_type
   const eventConfig = Object.values(eventConfigs).find(config => 
@@ -74,9 +83,26 @@ export async function execute(
   const durationMinutes = (kickTime.getTime() - joinTime.getTime()) / (1000 * 60);
   const pointsEarned = durationMinutes * eventConfig.points_per_minute;
 
-  // Remove member from event
-  delete event.participants[memberId];
+  // Remove member from event in activeEvents
+  delete eventFromStorage.participants[memberId];
   saveActiveEvents(activeEvents);
+  
+  // Create and save event record in standard format
+  const record: EventRecord = {
+    event_id: event.event_id,
+    event_type: event.event_type,
+    creator_id: event.creator_id,
+    start_time: joinTime.toISOString(),
+    end_time: kickTime.toISOString(),
+    duration_minutes: durationMinutes,
+    participants: {
+      [memberId]: {
+        duration_minutes: durationMinutes,
+        points_earned: pointsEarned
+      }
+    }
+  };
+  addEventRecord(record);
 
   await safeReply(interaction, { 
     content: `✅ **${displayName}** has been removed from your event. They participated for ${durationMinutes.toFixed(2)} minutes and earned ${pointsEarned.toFixed(2)} points.`, 

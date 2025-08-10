@@ -103,24 +103,59 @@ client.once(Events.ClientReady, async (readyClient) => {
   }
 });
 
-// Handle slash command interactions
+// Handle interactions
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-  
-  const command = commands.get(interaction.commandName);
-  if (!command) return;
-  
   try {
-    await command.execute(interaction, eventConfigs);
-  } catch (error) {
-    console.error(`Error executing command ${interaction.commandName}:`, error);
-    
-    const errorMessage = 'There was an error while executing this command!';
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
-    } else {
-      await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
+    // Handle chat input commands
+    if (interaction.isChatInputCommand()) {
+      const command = commands.get(interaction.commandName);
+      if (!command) return;
+      
+      try {
+        await command.execute(interaction, eventConfigs);
+      } catch (error) {
+        console.error(`Error executing command ${interaction.commandName}:`, error);
+        const errorMessage = 'There was an error while executing this command!';
+        
+        if (interaction.replied || interaction.deferred) {
+          await interaction.followUp({ content: errorMessage, flags: MessageFlags.Ephemeral });
+        } else {
+          await interaction.reply({ content: errorMessage, flags: MessageFlags.Ephemeral });
+        }
+      }
     }
+    // Handle button interactions
+    else if (interaction.isButton()) {
+      console.log(`[DEBUG] Received button interaction: ${interaction.customId}`);
+      
+      // Handle leave event button
+      if (interaction.customId.startsWith('leave_event_')) {
+        try {
+          const { handleLeaveEvent } = require('./commands/subcommands/status');
+          await handleLeaveEvent(interaction, eventConfigs);
+        } catch (error) {
+          console.error('Error handling leave event button:', error);
+          
+          try {
+            if (!interaction.replied && !interaction.deferred) {
+              await interaction.reply({
+                content: 'Failed to process leave request.',
+                ephemeral: true
+              });
+            } else {
+              await interaction.followUp({
+                content: 'Failed to process leave request.',
+                ephemeral: true
+              });
+            }
+          } catch (followUpError) {
+            console.error('Error sending error message:', followUpError);
+          }
+        }
+      }
+    }
+  } catch (outerError) {
+    console.error('Unexpected error in interaction handler:', outerError);
   }
 });
 

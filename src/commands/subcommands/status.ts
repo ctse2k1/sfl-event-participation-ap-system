@@ -2,6 +2,7 @@ import { safeReply } from "../../utils/interactionUtils";
 import { ChatInputCommandInteraction, Interaction, EmbedBuilder, MessageFlags, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import { getActiveEvents } from '../../utils/dataUtils';
 import { getDisplayName } from '../../utils/userUtils';
+import { getUserEvents, saveUserEvents } from '../../utils/userEventUtils';
 
 export async function execute(interaction: ChatInputCommandInteraction): Promise<void> {
   const userId = interaction.user.id;
@@ -79,10 +80,27 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
 }
 
 export async function handleLeaveEvent(interaction: Interaction, eventConfigs: Record<string, any>): Promise<void> {
-  if (!interaction.isButton()) return;
+  console.log('[DEBUG] Leave button clicked - interaction received');
+  
+  if (!interaction.isButton()) {
+    console.log('[DEBUG] Interaction is not a button - exiting');
+    return;
+  }
+
+  try {
+    console.log('[DEBUG] Deferring interaction reply');
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    console.log('[DEBUG] Interaction deferred successfully');
+  } catch (error) {
+    console.error('[ERROR] Failed to defer interaction:', error);
+    return;
+  }
 
   const userId = interaction.user.id;
+  console.log(`[DEBUG] Processing leave request for user: ${userId}`);
+  
   const activeEvents = getActiveEvents();
+  console.log(`[DEBUG] Found ${Object.keys(activeEvents).length} active events`);
 
   // Find the event the user is currently in
   const currentEvent = Object.values(activeEvents).find(event => 
@@ -90,49 +108,65 @@ export async function handleLeaveEvent(interaction: Interaction, eventConfigs: R
   );
 
   if (!currentEvent) {
-    if ('reply' in interaction) {
-      await (interaction as any).reply({
-        content: "You are not currently participating in any active events.",
-        flags: MessageFlags.Ephemeral
-      });
-    }
+    console.log('[DEBUG] User is not participating in any event');
+    await interaction.editReply({
+      content: "You are not currently participating in any active events."
+    });
     return;
   }
+
+  console.log(`[DEBUG] Found event: ${currentEvent.event_type} (ID: ${currentEvent.event_id})`);
 
   // Prevent host from leaving
   if (currentEvent.creator_id === userId) {
-    if ('reply' in interaction) {
-      await (interaction as any).reply({
-        content: "As the event host, you cannot leave the event. Use `/event stop` to end the event.",
-        flags: MessageFlags.Ephemeral
-      });
-    }
+    await safeReply(interaction, {
+      content: "As the event host, you cannot leave the event. Use `/event stop` to end the event.",
+      flags: MessageFlags.Ephemeral
+    });
     return;
   }
 
-  // Remove the user from the event
+  // Calculate points and remove participant (same as kick command)
+  const joinTime = new Date(currentEvent.participants[userId].join_time);
+  const leaveTime = new Date();
+  const durationMinutes = (leaveTime.getTime() - joinTime.getTime()) / (1000 * 60);
+  const pointsEarned = durationMinutes * eventConfigs[currentEvent.event_id].points_per_minute;
+  
+  // Remove user from event
   delete currentEvent.participants[userId];
-
-  // Save the updated active events
-  const updatedActiveEvents = {
-    ...activeEvents,
-    [currentEvent.event_id]: currentEvent
+  
+  // Create and save event record in standard format
+  const { addEventRecord } = require('../../utils/dataUtils');
+  const record = {
+    event_id: currentEvent.event_id,
+    event_type: currentEvent.event_type,
+    creator_id: currentEvent.creator_id,
+    start_time: joinTime.toISOString(),
+    end_time: leaveTime.toISOString(),
+    duration_minutes: durationMinutes,
+    participants: {
+      [userId]: {
+        duration_minutes: durationMinutes,
+        points_earned: pointsEarned
+      }
+    }
   };
+  addEventRecord(record);
 
-  // Update the active events in the data store
-  const fs = require('fs');
-  fs.writeFileSync('./data/active_events.json', JSON.stringify(updatedActiveEvents, null, 2));
-
-  if ('update' in interaction) {
-    await (interaction as any).update({
-      content: `You have left the event: ${currentEvent.event_type}`,
-      embeds: [],
-      components: []
+  // Save the updated active events using the proper utility
+  try {
+    // Update event by code instead of ID
+    activeEvents[currentEvent.code] = currentEvent;
+    const { saveActiveEvents } = require('../../utils/dataUtils');
+    saveActiveEvents(activeEvents);
+    
+    await interaction.editReply({
+      content: `You have left the event: ${currentEvent.event_type}`
     });
-  } else if ('reply' in interaction) {
-    await (interaction as any).reply({
-      content: `You have left the event: ${currentEvent.event_type}`,
-      flags: MessageFlags.Ephemeral
+  } catch (error) {
+    console.error('Error saving event data:', error);
+    await interaction.editReply({
+      content: "Failed to leave the event. Please try again."
     });
   }
 }

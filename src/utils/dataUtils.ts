@@ -59,6 +59,13 @@ export function saveEventRecords(eventRecords: EventRecord[]): void {
   saveData(EVENT_RECORDS_FILE, eventRecords);
 }
 
+// Add a single event record to the records file
+export function addEventRecord(record: EventRecord): void {
+  const records = getEventRecords();
+  records.push(record);
+  saveEventRecords(records);
+}
+
 // Get event by creator
 export function getEventByCreator(creatorId: string, activeEvents?: Record<string, ActiveEvent>): ActiveEvent | null {
   const creatorIdStr = creatorId.toString();
