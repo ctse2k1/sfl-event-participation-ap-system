@@ -55,6 +55,15 @@ export async function execute(
 
   // Calculate points for the kicked member
   const activeEvents = getActiveEvents();
+  // Get the event directly from activeEvents using the event code
+  const eventFromStorage = activeEvents[event.code];
+  if (!eventFromStorage) {
+    await safeReply(interaction, { 
+      content: `❌ Event not found in active events.`, 
+      flags: MessageFlags.Ephemeral 
+    });
+    return;
+  }
   
   // Find the event config by matching the event_type
   const eventConfig = Object.values(eventConfigs).find(config => 
@@ -74,8 +83,8 @@ export async function execute(
   const durationMinutes = (kickTime.getTime() - joinTime.getTime()) / (1000 * 60);
   const pointsEarned = durationMinutes * eventConfig.points_per_minute;
 
-  // Remove member from event
-  delete event.participants[memberId];
+  // Remove member from event in activeEvents
+  delete eventFromStorage.participants[memberId];
   saveActiveEvents(activeEvents);
 
   await safeReply(interaction, { 
